@@ -1,0 +1,18 @@
+.main-container {
+	margin-top:70px;
+}
+h1 {
+	margin-bottom: 20px;
+	padding-bottom: 20px;
+	border-bottom: 1px solid #eee;
+}
+.loading {
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	top: 0;
+	background: url("/i/svg-loaders/rings.svg") no-repeat scroll center center / 10% auto rgba(0, 0, 0, 0.4);
+	opacity: 0;
+	z-index: 1031;
+}

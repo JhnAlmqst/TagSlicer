@@ -1,0 +1,29 @@
+<IfModule mod_rewrite.c>
+	RewriteEngine on
+	RewriteBase /
+	
+	#-- remove www
+	RewriteCond %{HTTP_HOST} ^www\.(.*)$ [NC]
+	RewriteRule ^(.*)$ http://%1/$1 [R=301,L]
+
+	#-- if dont exists such file or dir,
+	#-- and request dont ends with /
+	#-- and request isnt html or php
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteCond %{REQUEST_FILENAME} !-d
+	RewriteCond %{REQUEST_URI} !(.*)/$
+	RewriteCond %{REQUEST_URI} !(.*)?(\.html|\.php)$
+	RewriteRule ^(.*[^/])$ $1/ [R=301,L]
+	
+	RewriteRule ^($|/$) index.php?controller=index&action=index [L]
+	RewriteRule ^([_a-zA-Z0-9]*?)($|/$) index.php?controller=$1&action=index [L]
+	RewriteRule ^([_a-zA-Z0-9]*?)/([_A-Za-z0-9]*?)/([_A-Za-z0-9]*?)($|/$) index.php?controller=$1&action=$2&id=$3 [L]	
+
+	#-- if dont exists such file or dir, request comes to index
+	RewriteCond %{REQUEST_FILENAME}	!-f
+	RewriteCond %{REQUEST_FILENAME}	!-d
+	RewriteRule ^(.*)$ index.php	[L]
+</IfModule>
+
+AddDefaultCharset utf-8  
+AddCharset utf-8 *

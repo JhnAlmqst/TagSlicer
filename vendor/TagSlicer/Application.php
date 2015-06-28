@@ -31,7 +31,8 @@ class Application
      */
     public $router;	
 	
-	public function __construct($config) {
+	public function __construct($config)
+	{
 		$this->basePath = $config['basePath'];
 	
 		self::$db = new Connection($config['db']);

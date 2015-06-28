@@ -13,7 +13,7 @@ use vendor\TagSlicer\Application;
 class Index extends Controller
 {	
 	public function actionIndex()
-	{			
+	{
 		$this->set('title', 'Форма');
 		$this->render('index', [
 			'page_title' => $this->get('title'),

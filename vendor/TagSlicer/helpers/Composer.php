@@ -25,19 +25,19 @@ class Composer
 		$assets = [
 			'bootstrap.min.css' => [
 				'/../../../vendor/twitter/bootstrap/dist/css/',
-				$_SERVER['DOCUMENT_ROOT'] .'/css/bootstrap/'
+				'/../../../www/css/bootstrap/'
 			],			
 			'bootstrap-theme.min.css' => [
 				'/../../../vendor/twitter/bootstrap/dist/css/',
-				$_SERVER['DOCUMENT_ROOT'] .'/css/bootstrap/'
+				'/../../../www/css/bootstrap/'
 			],
 			'bootstrap.min.js' => [
 				'/../../../vendor/twitter/bootstrap/dist/js/',
-				$_SERVER['DOCUMENT_ROOT'] .'/js/bootstrap/'
+				'/../../../www/js/bootstrap/'
 			],
 			'jquery.min.js' => [
 				'/../../../vendor/components/jquery/',
-				$_SERVER['DOCUMENT_ROOT'] .'/js/jquery/'
+				'/../../../www/js/jquery/'
 			]
 		];
 		

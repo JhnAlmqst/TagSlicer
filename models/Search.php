@@ -6,7 +6,6 @@
  * @version 1.0
  */
 namespace models;
-use vendor\TagSlicer\Application;
 use vendor\TagSlicer\GetSetTrait;
 
 class Search
@@ -24,12 +23,14 @@ class Search
 		'elements' => '`elements` text NOT NULL',
 		'count' => '`count` smallint(6) NOT NULL',
 	];
+	private $db;
 
-	public function __construct()
+	public function __construct($db)
 	{
+		$this->set('db', $db);
 		$table_exists = false;
-		foreach (Application::$db->query('SHOW TABLES') as $r) {
-			if ($r[0] == Application::$table) {
+		foreach ($this->db->query('SHOW TABLES') as $r) {
+			if ($r[0] == $this->db->getTable()) {
 				$table_exists = true;
 			}
 		}
@@ -45,23 +46,23 @@ class Search
 		foreach ($this->fields as $field => $v) {
 			$insertSet .= '`'.$field. '` = :'.$field.',';
 		}
-		$sth = Application::$db->prepare('
+		$sth = $this->db->prepare('
 					INSERT
-						INTO '.Application::$table.'
+						INTO '.$this->db->getTable().'
 						SET '.substr($insertSet, 0, -1).'
 				');
 		foreach ($this->fields as $field => $v) {
 			$sth->bindValue(':'.$field, htmlspecialchars($this->get($field), ENT_QUOTES));
 		}
 		$sth->execute();
-		return Application::$db->lastInsertId();
+		return $this->db->lastInsertId();
 	}
 	
 	public function findAll(\vendor\TagSlicer\Router $router, $elements_on_page)
 	{
-		$res = Application::$db->query('
+		$res = $this->db->query('
 					SELECT COUNT(*)
-						FROM '.Application::$table.'
+						FROM '.$this->db->getTable().'
 				');
 		$count = $res->fetchColumn();
 
@@ -69,9 +70,10 @@ class Search
 		if (0 != $from) {
 			$from -= 1;
 		}
-		$res = Application::$db->query('
+
+		$res = $this->db->query('
 					SELECT id, url, type, count
-						FROM '.Application::$table.'
+						FROM '.$this->db->getTable().'
 						ORDER BY id
 						LIMIT '.($from * $elements_on_page).', '.$elements_on_page.'
 				');
@@ -93,9 +95,9 @@ class Search
 				$data['values'][] = $value;
 			}
 		}
-		$sth = Application::$db->prepare('
+		$sth = $this->db->prepare('
 					SELECT *
-						FROM '.Application::$table.'
+						FROM '.$this->db->getTable().'
 						WHERE '.join('AND', $data['fields']).'
 				');
 		$sth->execute($data['values']);
@@ -110,12 +112,12 @@ class Search
 	private function create()
 	{
 		$q = '
-			CREATE TABLE `'.Application::$table.'` (
+			CREATE TABLE `'.$this->db->getTable().'` (
 				'.join(',', $this->fields).',
 			  PRIMARY KEY (`id`),
 			  KEY `url` (`url`)
 			) ENGINE=InnoDB DEFAULT CHARSET=utf8 ;
 		';
-		$res = Application::$db->query($q);
+		$res = $this->db->query($q);
 	}	
 }

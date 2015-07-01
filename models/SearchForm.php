@@ -7,7 +7,6 @@
  */
 namespace models;
 use vendor\TagSlicer\PostRequest;
-use vendor\TagSlicer\Application;
 
 class SearchForm
 {	
@@ -93,9 +92,9 @@ class SearchForm
 		}
 		return $ret;
 	}
-	public function getSearchResult()
+	public function getSearchResult($db, $types)
 	{
-		$record = new Search();
+		$record = new Search($db);
 
 		$link = $this->post->get('link');
 		$type = (int)$this->post->get('type');
@@ -105,7 +104,7 @@ class SearchForm
 			$link = 'http://'. $link;
 		}
 		$regexp = [];
-		foreach (Application::$types as $t) {
+		foreach ($types as $t) {
 			$regexp[$t['id']] = is_callable($t['regexp']) ? $t['regexp']($text) : $t['regexp'];
 		}	
 		

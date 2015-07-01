@@ -17,7 +17,7 @@ class Index extends Controller
 		$this->set('title', 'Форма');
 		$this->render('index', [
 			'page_title' => $this->get('title'),
-			'types' => Application::$types,
+			'types' => $this->di->types,
 			'content' => '',
 		]);
 	}

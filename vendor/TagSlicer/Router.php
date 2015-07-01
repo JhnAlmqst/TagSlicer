@@ -18,13 +18,19 @@ class Router
      * @var string current action
      */	
 	private $action;
+    /**
+     * @var string current layout
+     */	
+	private $layout;	
 
 	public function __construct($config)
 	{
 		foreach ($_GET as $key => $value) {
 			$this->$key = htmlspecialchars(trim($value), ENT_QUOTES);
 		}
-		
+
+		$this->layout = $config['defaultLayout'];
+
 		if (!isset($this->controller)) {
 			$this->controller = $config['defaultController'];
 		}

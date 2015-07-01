@@ -9,6 +9,8 @@ namespace vendor\TagSlicer;
 
 class Connection extends \PDO
 {
+	private $table;
+
 	public function __construct($config)
 	{
 		try {
@@ -19,8 +21,17 @@ class Connection extends \PDO
 						[\PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES \''.$config['charset'].'\'']
 					); 
 			$this->setAttribute( \PDO::ATTR_ERRMODE, \PDO::ERRMODE_WARNING );	
+			$this->setTable($config['table']);
 		} catch (PDOException $e) {
 			die( 'Подключение не удалось: ' . $e->getMessage() );
 		}
+	}
+	
+	public function getTable() {
+		return $this->table;
+	}	
+	
+	public function setTable($table) {
+		$this->table = $table;
 	}
 }

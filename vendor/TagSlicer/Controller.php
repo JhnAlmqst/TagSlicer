@@ -10,47 +10,39 @@ namespace vendor\TagSlicer;
 abstract class Controller
 {
 	use GetSetTrait;
-    /**
-     * @var string base path.
-     */
-	public $basePath;
-    /**
-     * @var object Router
-     */
-    public $router;
-    /**
-     * @var array site variables
-     */
-    public $sitevars;	
+
     /**
      * @var string page title
      */
-    public $title;	
+    private $title;
+    /**
+     * @var object template engine
+     */	
+	private $template;
+    /**
+     * @var object DI
+     */	
+	protected $di;	
 	
-	public function __construct($app)
+	public function __construct($di)
 	{
-		$this->basePath = $app->basePath;
-		$this->router = $app->router;
-		$this->sitevars = $app->sitevars;
+		$this->set('di', $di);
+		$this->set('template', $this->setTemplateEngine());
 	}
 	
 	protected function render($fileName, $vars)
-	{
-		require_once $this->basePath.'/vendor/twig/twig/lib/Twig/Autoloader.php';
-		
-		\Twig_Autoloader::register();
-		
-		$loader = new \Twig_Loader_Filesystem($this->basePath.'/views');
-		$twig = new \Twig_Environment($loader, ['autoescape' => false]);
-		
-		$view = $twig->loadTemplate($this->router->get('controller').'/'.$fileName.'.php');
-		$layout = $twig->loadTemplate('layouts/main.php');
+	{	
+		list($layout, $view) = $this->getTemplates($fileName);
+
+		if (!$layout || !$view) {
+			return $this->returnError('Указан несуществующий шаблон');
+		}
 
 		echo $layout->render([
 			'content' => $view->render($vars),
 			'title' => $this->get('title'),
-			'sitename' => $this->sitevars['title'],
-			'controller' => $this->router->get('controller'),
+			'sitename' => $this->di->siteVars['title'],
+			'controller' => $this->di->router->get('controller'),
 		]);
 	}
 	
@@ -65,11 +57,43 @@ abstract class Controller
 	
 	protected function returnError($msg = 'Такой страницы не существует')
 	{
-		$this->router->set('controller', 'error');
+		$this->di->router->set('controller', 'error');
 		$this->set('title', 'Ошибка!');
 		$this->render('show', [
 			'page_title' => $this->get('title'),
 			'content' => $msg,
 		]);	
+	}
+    /**
+	 * Template engine loader
+	 *
+     * @return void
+     */	
+	private function setTemplateEngine()
+	{
+		require_once $this->di->basePath.'/vendor/twig/twig/lib/Twig/Autoloader.php';
+		
+		\Twig_Autoloader::register();
+
+		return new \Twig_Environment(
+								new \Twig_Loader_Filesystem($this->di->basePath.'/views'),
+								['autoescape' => false]
+							);
+	}
+    /**
+	 * Get objects for view and layout
+	 *
+	 * @param string name of view file
+     * @return array [object layout template, object view template]
+     */	
+	private function getTemplates($fileName)
+	{
+		$layoutFile = 'layouts/'.$this->di->router->get('layout').'.php';
+		$viewFile = $this->di->router->get('controller').'/'.$fileName.'.php';
+
+		return [
+			is_file($this->di->basePath .'/views/'. $layoutFile) ? $this->template->loadTemplate($layoutFile) : false,
+			is_file($this->di->basePath .'/views/'. $viewFile) ? $this->template->loadTemplate($viewFile) : false
+		];
 	}	
 }

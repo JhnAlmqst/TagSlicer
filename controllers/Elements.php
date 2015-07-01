@@ -14,19 +14,20 @@ class Elements extends Controller
 {	
 	public function actionIndex()
 	{
-		$elements = new Search();
-		$elements_on_page = $this->get('sitevars');
+		$elements = new Search($this->di->db);
+		$elements_on_page = $this->di->siteVars;
 		$elements_on_page = $elements_on_page['elements_on_page'];
 		
-		list($out, $count) = $elements->findAll($this->router, $elements_on_page);
+		list($out, $count) = $elements->findAll($this->di->router, $elements_on_page);
 		$count = ceil($count / $elements_on_page);
 		
-		if ($this->router->get('id') > $count) {
+		$id = $this->di->router->get('id');
+		if ($id > $count) {
 			$this->returnError();			
 		} else {
 			$this->set('title', 'Список проверенных сайтов');
 			$types = [];
-			foreach (Application::$types as $type) {
+			foreach ($this->di->types as $type) {
 				$types[$type['id']] = $type['title'];
 			}
 
@@ -35,7 +36,7 @@ class Elements extends Controller
 				'elements' => $out,
 				'types' => $types,
 				'count' => 1 >= $count ? false : range(1, $count),
-				'current' => !$this->router->get('id') ? 1 : $this->router->get('id')
+				'current' => !$id ? 1 : $id
 			]);
 		}
 	}
@@ -47,9 +48,9 @@ class Elements extends Controller
 	
 	public function actionShow()
 	{
-		$element = new Search();
+		$element = new Search($this->di->db);
 		
-		$out = $element->find(['id' => $this->router->get('id')]);
+		$out = $element->find(['id' => $this->di->router->get('id')]);
 
 		if ($out) {
 			$values = explode("\t", htmlspecialchars_decode($out['elements'], ENT_QUOTES));

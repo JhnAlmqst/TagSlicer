@@ -1,17 +1,6 @@
 {
     "require":{
         "php":">=5.4.0",
-        "twitter/bootstrap": "dev-master",
-		"components/jquery": "dev-master",
         "twig/twig":">=1.8,<2.0-dev"
-    },
-	"autoload": {
-		"psr-0": {
-			"vendor\\TagSlicer\\helpers\\Composer" : ""
-		}
-	},
-	"scripts":{
-		"post-update-cmd": "vendor\\TagSlicer\\helpers\\Composer::postUpdate",
-		"post-install-cmd": "vendor\\TagSlicer\\helpers\\Composer::postUpdate"
-	}
+    }
 }

@@ -20,7 +20,7 @@ class Search extends Controller
 			if (!$form->validate()) {
 				$this->returnAjax(0, $form->post());			
 			}
-			list($status, $message) = $form->getSearchResult();
+			list($status, $message) = $form->getSearchResult($this->di->db, $this->di->types);
 			$this->returnAjax($status, $message);
 		} else {
 			$this->returnError();		

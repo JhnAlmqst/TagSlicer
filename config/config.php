@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'basePath' => dirname(__DIR__),
+	'basePath' => dirname(__DIR__),
     'db' => [
 		'dsn' => 'mysql:host=localhost;dbname=search',
 		'username' => 'root',
@@ -12,8 +12,9 @@ return [
 	'route' => [
 		'defaultController' => 'index',
 		'defaultAction' => 'index',
+		'defaultLayout' => 'main',
 	],
-	'sitevars' => [
+	'siteVars' => [
 		'title'	=> 'TagSlicer',
 		'elements_on_page' => 10
 	],

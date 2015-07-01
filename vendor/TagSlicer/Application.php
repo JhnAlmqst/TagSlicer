@@ -11,51 +11,40 @@ use controllers;
 class Application
 {
     /**
-     * @var string base path.
-     */
-	public $basePath;
-    /**
-     * @var PDO
-     */
-    static public $db;
-    /**
-     * @var table in DB
-     */
-    static public $table;
-    /**
      * @var search types
      */
     static public $types;	
+
     /**
-     * @var object Router
+     * @var object DI
      */
-    public $router;	
+    private $di;		
 	
 	public function __construct($config)
 	{
-		$this->basePath = $config['basePath'];
-	
-		self::$db = new Connection($config['db']);
-		self::$table = $config['db']['table'];
-		$this->router = new Router($config['route']);
-		$this->sitevars = $config['sitevars'];
-		self::$types = $config['types'];
+		$this->di = new DI();
+		$this->di->router = new Router($config['route']);
+		$this->di->db = new Connection($config['db']);
+		$this->di->basePath = $config['basePath'];
+		$this->di->siteVars = $config['siteVars'];
+		$this->di->types = $config['types'];
 	}
 	
-	public function run() {
-		$className = "\\controllers\\" . ucfirst($this->router->get('controller'));
-		$actionName = "action" . ucfirst($this->router->get('action'));
+	public function run()
+	{
+		$className = "\\controllers\\" . ucfirst($this->di->router->get('controller'));
+		$actionName = "action" . ucfirst($this->di->router->get('action'));
 
-		if (!is_file($this->basePath . $className . '.php')) {
+		if (!is_file($this->di->basePath . $className . '.php')) {
 			$className = '\controllers\Error';
-			$this->router->set('controller', 'error');
+			$this->di->router->set('controller', 'error');
 		}
 
-		$controller = new $className($this);
+		$controller = new $className($this->di);
 
 		if (!method_exists($controller, $actionName)) {
 			$actionName = 'actionShow';
-			$this->router->set('action', 'show');
+			$this->di->router->set('action', 'show');
 		}
 		
 		$controller->$actionName();
